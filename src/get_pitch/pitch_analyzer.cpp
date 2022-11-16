@@ -12,6 +12,16 @@ namespace upc {
 
     for (unsigned int l = 0; l < r.size(); ++l) {
   		/// \TODO Compute the autocorrelation r[l]
+      /// \FET Autocorrelació calculada
+      /// - Inicialitzem l'autocorrelació a 0
+      /// - Afegim el producte
+      /// - Dividim per la durada
+      ///
+      /// *** TAXAAN ***
+      for(unsigned int n = 0; n < x.size() - l; n++){
+        r[l] += x[n] * x[n+l];
+      }
+      r[l] = r[l] / x.size();
     }
 
     if (r[0] == 0.0F) //to avoid log() and divide zero 
@@ -50,6 +60,11 @@ namespace upc {
     /// \TODO Implement a rule to decide whether the sound is voiced or not.
     /// * You can use the standard features (pot, r1norm, rmaxnorm),
     ///   or compute and use other ones.
+    /// \FET Desició de si la trama és sorda o sonora aplicada.
+    /// - Decidim que la trama és sonora només si superem els tres umbrals.
+    ///
+    if((rmaxnorm > umaxnorm) && (r1norm > u1norm) && (pot > upot)) return false;
+
     return true;
   }
 
@@ -58,7 +73,7 @@ namespace upc {
       return -1.0F;
 
     //Window input frame
-    for (unsigned int i=0; i<x.size(); ++i)
+    for (unsigned int i = 0; i < x.size(); ++i)
       x[i] *= window[i];
 
     vector<float> r(npitch_max);
@@ -75,7 +90,11 @@ namespace upc {
 	///    - The lag corresponding to the maximum value of the pitch.
     ///	   .
 	/// In either case, the lag should not exceed that of the minimum value of the pitch.
-
+    for(iR = iRMax = r.begin() + npitch_min; iR != r.end(); iR++){
+      if(*iR > *iRMax){
+        iRMax = iR;
+      }
+    }
     unsigned int lag = iRMax - r.begin();
 
     float pot = 10 * log10(r[0]);
