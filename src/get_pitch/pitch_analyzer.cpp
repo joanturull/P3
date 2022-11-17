@@ -12,6 +12,15 @@ namespace upc {
 
     for (unsigned int l = 0; l < r.size(); ++l) {
   		/// \TODO Compute the autocorrelation r[l]
+      /// \FET autocorrelation computed
+      /// - Inicialitzem l'autocorrelació a 0
+      /// - Afegim el producte 
+      /// - Dividim per la durada
+      /// *** TAXAAN ***
+      for(unsigned int n = 0; n < x.size() - l; n++){
+        r[l]+=x[n] * x[n+l];
+      }
+      r[l] /= x.size();
     }
 
     if (r[0] == 0.0F) //to avoid log() and divide zero 
@@ -50,6 +59,7 @@ namespace upc {
     /// \TODO Implement a rule to decide whether the sound is voiced or not.
     /// * You can use the standard features (pot, r1norm, rmaxnorm),
     ///   or compute and use other ones.
+    if(rmaxnorm>umaxnorm)return false;
     return true;
   }
 
@@ -67,6 +77,9 @@ namespace upc {
     autocorrelation(x, r);
 
     vector<float>::const_iterator iR = r.begin(), iRMax = iR;
+    for(iR = iRMax = r.begin() + npitch_min; iR != r.end() ;iR++){
+        if(*iR > *iRMax) iRMax = iR;
+    }
 
     /// \TODO 
 	/// Find the lag of the maximum value of the autocorrelation away from the origin.<br>
@@ -76,6 +89,7 @@ namespace upc {
     ///	   .
 	/// In either case, the lag should not exceed that of the minimum value of the pitch.
 
+    
     unsigned int lag = iRMax - r.begin();
 
     float pot = 10 * log10(r[0]);
