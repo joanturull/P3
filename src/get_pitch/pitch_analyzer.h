@@ -32,7 +32,6 @@ namespace upc {
       npitch_max; ///< maximum value of pitch period, in samples
     float umaxnorm, u1norm, upot;
  
-    float umaxnorm;
 	///
 	/// Computes correlation from lag=0 to r.size()
 	///
@@ -65,8 +64,14 @@ namespace upc {
       umaxnorm = umaxnorm_;
       u1norm = u1norm_;
       upot = upot_;
+      set_f0_range(min_F0, max_F0);
+      set_window(w);
+    }
+
+	///
     /// Operator (): computes the pitch for the given vector x
 	///
+    float operator()(const std::vector<float> & _x) const {
       if (_x.size() != frameLen)
         return -1.0F;
 

@@ -18,17 +18,17 @@ using namespace upc;
 
 static const char USAGE[] = R"(
 get_pitch - Pitch Estimator 
-
 Usage:
     get_pitch [options] <input-wav> <output-txt>
     get_pitch (-h | --help)
     get_pitch --version
-
 Options:
-    -m REAL, --umaxnorm=REAL  Llindar del màxim de l'autocorrelació [default: 0.6]
+    -m REAL, --umaxnorm=REAL  Llindar del màxim de l'autocorrelació [default: 0.39]
+    -1 REAL, --u1norm=REAL  Llindar autocorrelació normalitzada de 1 (r(1)/r(0)) [default: 0.53]
+    -p REAL, --upot=REAL  Llindar nivell de poténcia de la senyal [default: -46]
+    -c REAL, --ucclip=REAL  Factor de center clipling de tot el senyal [default: 0.01]
     -h, --help  Show this screen
     --version   Show the version of the project
-
 Arguments:
     input-wav   Wave file with the audio signal
     output-txt  Output file: ASCII file with the result of the estimation:
@@ -48,6 +48,9 @@ int main(int argc, const char *argv[]) {
 	std::string input_wav = args["<input-wav>"].asString();
 	std::string output_txt = args["<output-txt>"].asString();
   float umaxnorm = stof(args["--umaxnorm"].asString());
+  float u1norm = stof(args["--u1norm"].asString());
+  float upot = stof(args["--upot"].asString());
+  float ucclip = stof(args["--ucclip"].asString());
 
 
   // Read input sound file
@@ -62,14 +65,14 @@ int main(int argc, const char *argv[]) {
   int n_shift = rate * FRAME_SHIFT;
 
   // Define analyzer
-  PitchAnalyzer analyzer(n_len, rate, PitchAnalyzer::RECT, 50, 500, umaxnorm);
+  PitchAnalyzer analyzer(n_len, rate, PitchAnalyzer::RECT, 50, 500, umaxnorm, u1norm, upot);
 
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
   float max = *std::max_element(x.begin(), x.end());
   for(int i = 0; i < (int)x.size(); i++) {
-    if(abs(x[i]) < ucclip * max) {
+    if((x[i]) < ucclip * max || -1*x[i]>ucclip * max) {
       x[i] = 0.0F;
     } 
   }
