@@ -15,9 +15,18 @@ Ejercicios básicos
 
    * Complete el cálculo de la autocorrelación e inserte a continuación el código correspondiente.
 
+    ```c
+    for (unsigned int l = 0; l < r.size(); ++l) {
+      for(unsigned int n = 0; n < x.size() - l; n++){
+        r[l] += x[n] * x[n+l];
+      }
+      r[l] = r[l] / x.size();
+    }
+    ```
+
    * Inserte una gŕafica donde, en un *subplot*, se vea con claridad la señal temporal de un segmento de
      unos 30 ms de un fonema sonoro y su periodo de pitch; y, en otro *subplot*, se vea con claridad la
-	 autocorrelación de la señal y la posición del primer máximo secundario.
+	   autocorrelación de la señal y la posición del primer máximo secundario.
 
 	 NOTA: es más que probable que tenga que usar Python, Octave/MATLAB u otro programa semejante para
 	 hacerlo. Se valorará la utilización de la biblioteca matplotlib de Python.
