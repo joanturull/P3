@@ -30,6 +30,7 @@ namespace upc {
       samplingFreq, ///< sampling rate (in samples per second). Has to be set in the constructor call
       npitch_min, ///< minimum value of pitch period, in samples
       npitch_max; ///< maximum value of pitch period, in samples
+    float umaxnorm, u1norm, upot;
  
     float umaxnorm;
 	///
@@ -54,20 +55,18 @@ namespace upc {
 					Window w=PitchAnalyzer::HAMMING,	///< Window type
 					float min_F0 = MIN_F0,		///< Pitch range should be restricted to be above this value
 					float max_F0 = MAX_F0,		///< Pitch range should be restricted to be below this value
-          float umaxnorm_ = 0
-				 )
+          float umaxnorm_ = 0,
+          float u1norm_ = 0,
+          float upot_ = 0
+         )
 	{
       frameLen = fLen;
       samplingFreq = sFreq;
       umaxnorm = umaxnorm_;
-      set_f0_range(min_F0, max_F0);
-      set_window(w);
-    }
-
-	///
+      u1norm = u1norm_;
+      upot = upot_;
     /// Operator (): computes the pitch for the given vector x
 	///
-    float operator()(const std::vector<float> & _x) const {
       if (_x.size() != frameLen)
         return -1.0F;
 
