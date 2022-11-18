@@ -72,9 +72,18 @@ int main(int argc, const char *argv[]) {
   /// central-clipping or low pass filtering may be used.
   float max = *std::max_element(x.begin(), x.end());
   for(int i = 0; i < (int)x.size(); i++) {
-    if((x[i]) < ucclip * max || -1*x[i]>ucclip * max) {
+    //Clipping without offset
+    if(abs(x[i]) < ucclip * max) {
       x[i] = 0.0F;
     } 
+    //Clipping with offset
+    // if(x[i] > ucclip * max){
+    //   x[i] -= ucclip * max;
+    // }else if(x[i] > ucclip * max){
+    //   x[i] += ucclip * max;
+    // }else{
+    //   x[i] = 0.0F;
+    // }
   }
 
   // Iterate for each frame and save values in f0 vector
