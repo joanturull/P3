@@ -36,6 +36,9 @@ namespace upc {
 
     switch (win_type) {
     case HAMMING:
+      for (int i = 0; i < frameLen; i++) {
+        window[i]  = 0.5 * (1 - cos(2*M_PI*i/2047));  
+      }
       /// \TODO Implement the Hamming window
       break;
     case RECT:

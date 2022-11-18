@@ -1,9 +1,12 @@
 /// @file
 
+
 #include <iostream>
 #include <fstream>
 #include <string.h>
 #include <errno.h>
+#include <math.h>
+#include <vector>
 
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
@@ -73,7 +76,7 @@ int main(int argc, const char *argv[]) {
   float max = *std::max_element(x.begin(), x.end());
   for(int i = 0; i < (int)x.size(); i++) {
     //Clipping without offset
-    if(abs(x[i]) < ucclip * max) {
+    if(fabs(x[i]) < ucclip * max) {
       x[i] = 0.0F;
     } 
     //Clipping with offset
@@ -97,7 +100,16 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
-
+  vector<float> median(3);
+  vector<float> f0_(f0.size());
+  f0_=f0;
+  for(int i = 1; i < (int)(f0_.size()-1); i++) {
+      for(int j = -1; j <=1; j++){
+          median[j+1]=f0_[i+j];
+      }
+      std::sort(median.begin(), median.end(), std::greater<int>());
+      f0[i]=median[1];
+  } 
   // Write f0 contour into the output file
   ofstream os(output_txt);
   if (!os.good()) {
