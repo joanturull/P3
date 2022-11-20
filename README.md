@@ -44,16 +44,14 @@ Ejercicios básicos
   * Utilice el programa `wavesurfer` para analizar las condiciones apropiadas para determinar si un
     segmento es sonoro o sordo. 
 	
-	  - Inserte una gráfica con la estimación de pitch incorporada a `wavesurfer` y, junto a ella, los 
+	- Inserte una gráfica con la estimación de pitch incorporada a `wavesurfer` y, junto a ella, los 
 	    principales candidatos para determinar la sonoridad de la voz: el nivel de potencia de la señal
 		(r[0]), la autocorrelación normalizada de uno (r1norm = r[1] / r[0]) y el valor de la
 		autocorrelación en su máximo secundario (rmaxnorm = r[lag] / r[0]).
-
+		
     <img src="img/wavesurfer.png" width="800" align="center">
     
-     	- Use el estimador de pitch implementado en el programa `wavesurfer` en una señal de prueba y compare
-	    su resultado con el obtenido por la mejor versión de su propio sistema.  Inserte una gráfica
-		ilustrativa del resultado de ambos estimadores.
+	- Use el estimador de pitch implementado en el programa `wavesurfer` en una señal de prueba y compare su resultado con el obtenido por la mejor versión de su propio sistema.  Inserte una gráfica ilustrativa del resultado de ambos estimadores.
 
     <img src="img/pitch.png" width="800" align="center">
 
@@ -145,7 +143,7 @@ Ejercicios de ampliación
       f0[i] = median[1];
     }
     ```
-    También hemos probado de utilizar un filtro de longitud 5, pero los resultados han empeorado, ya que muchas tramas de voz eran seleccionadas como silencio. Vea el resultado:
+    También hemos probado de utilizar un filtro de longitud 5, pero los resultados han empeorado, ya que muchas tramas de voz eran consideradas como silencio debido a los silencios cortos. Vea el resultado:
 
     <img src="img/mediana5.png" width="600" align="center">
 
