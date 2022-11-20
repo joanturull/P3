@@ -38,7 +38,7 @@ Ejercicios básicos
 	 hacerlo. Se valorará la utilización de la biblioteca matplotlib de Python.
 
    Hemos creado un script de python para hacer la gráfica usando la biblioteca matlpotlib. Vemos claramente que se mantiene la periodicidad. El código para realizar la gráfica se encuentra en el fichero 'frame.py'.
-   <img src="plot.png" width="700" align="center">
+   <img src="img/plot.png" width="700" align="center">
 
    * Determine el mejor candidato para el periodo de pitch localizando el primer máximo secundario de la
      autocorrelación. Inserte a continuación el código correspondiente.
