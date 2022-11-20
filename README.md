@@ -15,9 +15,13 @@ Ejercicios básicos
 
    * Complete el cálculo de la autocorrelación e inserte a continuación el código correspondiente.
 
+<<<<<<< HEAD
     ```c
     void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) const {
 
+=======
+    ```cpp
+>>>>>>> 80c6584c8a0e78d13fa9a82595c5e53909ac2685
     for (unsigned int l = 0; l < r.size(); ++l) {
       for(unsigned int n = 0; n < x.size() - l; n++){
         r[l] += x[n] * x[n+l];
@@ -70,26 +74,25 @@ Ejercicios básicos
   * Utilice el programa `wavesurfer` para analizar las condiciones apropiadas para determinar si un
     segmento es sonoro o sordo. 
 	
-	  - Inserte una gráfica con la estimación de pitch incorporada a `wavesurfer` y, junto a ella, los 
+	- Inserte una gráfica con la estimación de pitch incorporada a `wavesurfer` y, junto a ella, los 
 	    principales candidatos para determinar la sonoridad de la voz: el nivel de potencia de la señal
 		(r[0]), la autocorrelación normalizada de uno (r1norm = r[1] / r[0]) y el valor de la
 		autocorrelación en su máximo secundario (rmaxnorm = r[lag] / r[0]).
+		
+    <img src="img/wavesurfer.png" width="800" align="center">
+    
+	- Use el estimador de pitch implementado en el programa `wavesurfer` en una señal de prueba y compare su resultado con el obtenido por la mejor versión de su propio sistema.  Inserte una gráfica ilustrativa del resultado de ambos estimadores.
 
-		Puede considerar, también, la conveniencia de usar la tasa de cruces por cero.
+    <img src="img/pitch.png" width="800" align="center">
 
-	    Recuerde configurar los paneles de datos para que el desplazamiento de ventana sea el adecuado, que
-		en esta práctica es de 15 ms.
-
-      - Use el estimador de pitch implementado en el programa `wavesurfer` en una señal de prueba y compare
-	    su resultado con el obtenido por la mejor versión de su propio sistema.  Inserte una gráfica
-		ilustrativa del resultado de ambos estimadores.
-     
-		Aunque puede usar el propio Wavesurfer para obtener la representación, se valorará
-	 	el uso de alternativas de mayor calidad (particularmente Python).
+    Observamos contornos de pitch parecidos.
   
   * Optimice los parámetros de su sistema de estimación de pitch e inserte una tabla con las tasas de error
     y el *score* TOTAL proporcionados por `pitch_evaluate` en la evaluación de la base de datos 
 	`pitch_db/train`..
+
+    <img src="img/total.png" width="600" align="center">
+
 
 Ejercicios de ampliación
 ------------------------
@@ -103,6 +106,9 @@ Ejercicios de ampliación
 
   * Inserte un *pantallazo* en el que se vea el mensaje de ayuda del programa y un ejemplo de utilización
     con los argumentos añadidos.
+
+    <img src="img/help.png" width="600" align="center">
+
 
 - Implemente las técnicas que considere oportunas para optimizar las prestaciones del sistema de estimación
   de pitch.
@@ -123,6 +129,71 @@ Ejercicios de ampliación
 
   Incluya, a continuación, una explicación de las técnicas incorporadas al estimador. Se valorará la
   inclusión de gráficas, tablas, código o cualquier otra cosa que ayude a comprender el trabajo realizado.
+
+  * Técnica de preprocesado: *Center Clipping*
+    
+    Como técnica de preprocesado hemos decidido implementar un *`center clipping`*. Obtuvimos mejores resultados con la técnica con *offset*. El codigo utilizado ha sido el siguiente:
+
+    ```cpp
+    float max = *std::max_element(x.begin(), x.end());
+    for(int i = 0; i < (int)x.size(); i++) {
+      //Clipping with offset
+      if(x[i] > ucclip * max){
+        x[i] -= ucclip * max;
+      }else if(x[i] > ucclip * max){
+        x[i] += ucclip * max;
+      }else{
+        x[i] = 0.0F;
+      }
+      //Clipping without offset
+      // if(fabs(x[i]) < ucclip * max) {
+      //   x[i] = 0.0F;
+      // } 
+    }
+    ```
+    Como podemos ver hemos decidido que el umbral del *clipping* fuese un porcentaje del máximo de la trama, para tener un umbral lo más adecuado possible en todas ellas. El mejor resultado sin *offset* fue el siguiente:
+
+    <img src="img/clipping_wo.png" width="600" align="center">
+
+    La diferencia es poca, pero con *offset* la detección de tramas sordas o sonoras mejora.
+
+  * Técnica de postprocesado: Filtro de Mediana
+
+    Como técnica de postprocesado hemos decidido implementar el `filtro de mediana de longitud 3`. El codigo utilizado ha sido el siguiente:
+
+    ```cpp
+    vector<float> median(3);
+    vector<float> f0_(f0.size());
+    f0_ = f0;
+    for(int i = 1; i < (int)(f0.size() - 1); i++){
+      for(int j = -1; j <= 1; j++){
+        median[j+1] = f0_[i+j];
+      }
+      std::sort(median.begin(), median.end(), std::greater<int>());
+      f0[i] = median[1];
+    }
+    ```
+    También hemos probado de utilizar un filtro de longitud 5, pero los resultados han empeorado, ya que muchas tramas de voz eran consideradas como silencio debido a los silencios cortos. Vea el resultado:
+
+    <img src="img/mediana5.png" width="600" align="center">
+
+  * Optimización de los parámetros que gobiernan la decisión sonoro/sordo.
+
+    Para optimizar los valores de los umbrales de las variables umaxnorm, u1norm e upot, hemos ido probando valores hasta encontrar un máximo.
+    Primero empezámos con la condición:
+    ```cpp
+    if(((rmaxnorm > umaxnorm) && (r1norm > u1norm)) || (pot > upot)) return false;
+    return true;
+    ```
+    Pero solo llegamos hasta un *score* TOTAL de 91.44%.
+
+    <img src="img/opt1.png" width="800" align="center">
+
+    Luego cambiamos nuestra condición a la siguiente y obtuvimos 91.49% de *score*.
+    ```cpp
+    if((rmaxnorm > umaxnorm) && (r1norm > u1norm) && (pot > upot)) return false;
+    return true;
+    ```
 
   También se valorará la realización de un estudio de los parámetros involucrados. Por ejemplo, si se opta
   por implementar el filtro de mediana, se valorará el análisis de los resultados obtenidos en función de
