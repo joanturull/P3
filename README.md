@@ -16,12 +16,18 @@ Ejercicios básicos
    * Complete el cálculo de la autocorrelación e inserte a continuación el código correspondiente.
 
     ```c
+    void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) const {
+
     for (unsigned int l = 0; l < r.size(); ++l) {
       for(unsigned int n = 0; n < x.size() - l; n++){
         r[l] += x[n] * x[n+l];
       }
       r[l] = r[l] / x.size();
     }
+
+    if (r[0] == 0.0F) //to avoid log() and divide zero 
+      r[0] = 1e-10; 
+  }
     ```
 
    * Inserte una gŕafica donde, en un *subplot*, se vea con claridad la señal temporal de un segmento de
@@ -31,10 +37,30 @@ Ejercicios básicos
 	 NOTA: es más que probable que tenga que usar Python, Octave/MATLAB u otro programa semejante para
 	 hacerlo. Se valorará la utilización de la biblioteca matplotlib de Python.
 
+   Hemos creado un script de python para hacer la gráfica usando la biblioteca matlpotlib. Vemos claramente que se mantiene la periodicidad. El código para realizar la gráfica se encuentra en el fichero 'frame.py'.
+   <img src="plot.png" width="600" align="center">
+
    * Determine el mejor candidato para el periodo de pitch localizando el primer máximo secundario de la
      autocorrelación. Inserte a continuación el código correspondiente.
 
+     ```c
+    for(iR = iRMax = r.begin() + npitch_min; iR != r.end(); iR++){
+      if(*iR > *iRMax){
+        iRMax = iR;
+      }
+    }
+    unsigned int lag = iRMax - r.begin();
+    ```
+
    * Implemente la regla de decisión sonoro o sordo e inserte el código correspondiente.
+
+   ```c
+    bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const {
+    if((rmaxnorm > umaxnorm) && (r1norm > u1norm) && (pot > upot)) return false;
+
+    return true;
+  }
+    ```
 
    * Puede serle útil seguir las instrucciones contenidas en el documento adjunto `código.pdf`.
 

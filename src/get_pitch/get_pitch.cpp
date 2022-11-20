@@ -6,7 +6,6 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
-#include <vector>
 
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
@@ -43,6 +42,9 @@ int main(int argc, const char *argv[]) {
 	/// \TODO 
 	///  Modify the program syntax and the call to **docopt()** in order to
 	///  add options and arguments to the program.
+  /// \FET
+  /// Hem afegit 4 variables que poden ser modificades per l'usuari amb la seva respectiva definició.
+  /// Això ho hem fet per testejar el programa, provant números i obtenint diferents resultats.
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
         {argv + 1, argv + argc},	// array of arguments, without the program name
         true,    // show help if requested
@@ -73,6 +75,9 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
+  /// \FET
+  /// Hem utilitzat central-clipping  per fer el preprocesat.
+  /// Hem obtingut millors resultats amb el clipping sense offset.
   float max = *std::max_element(x.begin(), x.end());
   for(int i = 0; i < (int)x.size(); i++) {
     //Clipping without offset
@@ -100,16 +105,19 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
+  /// \FET
+  /// Hem aplicat el filtre de mitjana de tres elements.
+  /// Hem usat dues seqüències del calcul de pitch per evitar fer un filtre recursiu.
   vector<float> median(3);
   vector<float> f0_(f0.size());
-  f0_=f0;
-  for(int i = 1; i < (int)(f0_.size()-1); i++) {
-      for(int j = -1; j <=1; j++){
-          median[j+1]=f0_[i+j];
-      }
-      std::sort(median.begin(), median.end(), std::greater<int>());
-      f0[i]=median[1];
-  } 
+  f0_ = f0;
+  for(int i = 1; i < (int)(f0.size() - 1); i++){
+    for(int j = -1; j <= 1; j++){
+      median[j+1] = f0_[i+j];
+    }
+    std::sort(median.begin(), median.end(), std::greater<int>());
+    f0[i] = median[1];
+  }
   // Write f0 contour into the output file
   ofstream os(output_txt);
   if (!os.good()) {

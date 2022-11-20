@@ -40,6 +40,11 @@ namespace upc {
         window[i]  = 0.5 * (1 - cos(2*M_PI*i/2047));  
       }
       /// \TODO Implement the Hamming window
+      /// \FET  Hem implementat la finestra de Hamming (https://en.wikipedia.org/wiki/Hann_function)
+      /// Hem obtingut pitjors resultats que amb la finestra rectangular.
+      for (int i = 0; i < frameLen; i++) {
+        window[i] = 0.5 * (1 - cos(2*M_PI*i/(frameLen - 1)));
+      }
       break;
     case RECT:
     default:
@@ -96,6 +101,8 @@ namespace upc {
 	///    - The lag corresponding to the maximum value of the pitch.
     ///	   .
 	/// In either case, the lag should not exceed that of the minimum value of the pitch.
+  /// \FET 
+  /// Hem buscat la posició del màxim de l'autocorelació fora del lóbul principal.
     for(iR = iRMax = r.begin() + npitch_min; iR != r.end(); iR++){
       if(*iR > *iRMax){
         iRMax = iR;
