@@ -15,13 +15,9 @@ Ejercicios básicos
 
    * Complete el cálculo de la autocorrelación e inserte a continuación el código correspondiente.
 
-<<<<<<< HEAD
     ```c
     void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) const {
 
-=======
-    ```cpp
->>>>>>> 80c6584c8a0e78d13fa9a82595c5e53909ac2685
     for (unsigned int l = 0; l < r.size(); ++l) {
       for(unsigned int n = 0; n < x.size() - l; n++){
         r[l] += x[n] * x[n+l];

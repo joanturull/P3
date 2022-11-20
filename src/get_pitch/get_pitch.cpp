@@ -43,12 +43,8 @@ int main(int argc, const char *argv[]) {
 	///  Modify the program syntax and the call to **docopt()** in order to
 	///  add options and arguments to the program.
   /// \FET
-<<<<<<< HEAD
   /// Hem afegit 4 variables que poden ser modificades per l'usuari amb la seva respectiva definició.
   /// Això ho hem fet per testejar el programa, provant números i obtenint diferents resultats.
-=======
-  ///  Hem afegit 4 arguments, els 3 umbrals de decisió de unvoiced i el factor del clipping.
->>>>>>> 80c6584c8a0e78d13fa9a82595c5e53909ac2685
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
         {argv + 1, argv + argc},	// array of arguments, without the program name
         true,    // show help if requested
