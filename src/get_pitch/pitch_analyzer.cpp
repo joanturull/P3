@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include "pitch_analyzer.h"
+#include "cepstrum.h"
 
 using namespace std;
 
@@ -82,11 +83,14 @@ namespace upc {
       x[i] *= window[i];
 
     vector<float> r(npitch_max);
-
     //Compute correlation
     autocorrelation(x, r);
 
     vector<float>::const_iterator iR = r.begin(), iRMax = iR;
+
+    // vector<float> c(x.size()/2);
+    // c = cepstrum(x);
+    // vector<float>::const_iterator iR = c.begin(), iRMax = iR;
 
     /// \TODO 
 	/// Find the lag of the maximum value of the autocorrelation away from the origin.<br>
@@ -97,12 +101,20 @@ namespace upc {
 	/// In either case, the lag should not exceed that of the minimum value of the pitch.
   /// \FET 
   /// Hem buscat la posició del màxim de l'autocorelació fora del lóbul principal.
+  
     for(iR = iRMax = r.begin() + npitch_min; iR != r.end(); iR++){
       if(*iR > *iRMax){
         iRMax = iR;
       }
     }
     unsigned int lag = iRMax - r.begin();
+
+    // for(iR = iRMax = c.begin() + npitch_min; iR != c.end(); iR++){
+    //   if(*iR > *iRMax){
+    //     iRMax = iR;
+    //   }
+    // }
+    // unsigned int lag = iRMax - c.begin();
 
     float pot = 10 * log10(r[0]);
 

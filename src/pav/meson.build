@@ -7,6 +7,7 @@ src = [
    'keyvalue.cpp',
    'wavfile_mono.cpp',
    'docopt_cpp/docopt.cpp',
+   'cepstrum.cpp',
 ]
 
 lib_pav = static_library(

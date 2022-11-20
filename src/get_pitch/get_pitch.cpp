@@ -26,9 +26,9 @@ Usage:
     get_pitch --version
 
 Options:
-    -m REAL, --umaxnorm=REAL  Llindar del màxim de l'autocorrelació [default: 0.39]
-    -1 REAL, --u1norm=REAL  Llindar autocorrelació normalitzada de 1 (r(1)/r(0)) [default: 0.53]
-    -p REAL, --upot=REAL  Llindar nivell de poténcia de la senyal [default: -46]
+    -m REAL, --umaxnorm=REAL  Llindar del màxim de l'autocorrelació [default: 0.43]
+    -1 REAL, --u1norm=REAL  Llindar autocorrelació normalitzada de 1 (r(1)/r(0)) [default: 0.72]
+    -p REAL, --upot=REAL  Llindar nivell de poténcia de la senyal [default: -55]
     -c REAL, --ucclip=REAL  Factor de center clipling de tot el senyal [default: 0.01]
     -h, --help  Show this screen
     --version   Show the version of the project
@@ -44,6 +44,8 @@ int main(int argc, const char *argv[]) {
 	/// \TODO 
 	///  Modify the program syntax and the call to **docopt()** in order to
 	///  add options and arguments to the program.
+  /// \FET
+  ///  Hem afegit 4 arguments, els 3 umbrals de decisió de unvoiced i el factor del clipping.
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
         {argv + 1, argv + argc},	// array of arguments, without the program name
         true,    // show help if requested
@@ -79,18 +81,18 @@ int main(int argc, const char *argv[]) {
   /// Hem obtingut millors resultats amb el clipping sense offset.
   float max = *std::max_element(x.begin(), x.end());
   for(int i = 0; i < (int)x.size(); i++) {
-    //Clipping without offset
-    if(fabs(x[i]) < ucclip * max) {
-      x[i] = 0.0F;
-    } 
     //Clipping with offset
-    // if(x[i] > ucclip * max){
-    //   x[i] -= ucclip * max;
-    // }else if(x[i] > ucclip * max){
-    //   x[i] += ucclip * max;
-    // }else{
+    if(x[i] > ucclip * max){
+      x[i] -= ucclip * max;
+    }else if(x[i] > ucclip * max){
+      x[i] += ucclip * max;
+    }else{
+      x[i] = 0.0F;
+    }
+    //Clipping without offset
+    // if(fabs(x[i]) < ucclip * max) {
     //   x[i] = 0.0F;
-    // }
+    // } 
   }
 
   // Iterate for each frame and save values in f0 vector
@@ -106,7 +108,7 @@ int main(int argc, const char *argv[]) {
   /// or time-warping may be used.
   /// \FET
   /// Hem aplicat el filtre de mitjana de tres elements.
-  /// Hem usat dues seqüències del calcul de pitch per evitar fer un filtre recursiu.
+  /// Hem usat dues seqüències del càlcul de pitch per evitar fer un filtre recursiu.
   vector<float> median(3);
   vector<float> f0_(f0.size());
   f0_ = f0;
@@ -117,6 +119,7 @@ int main(int argc, const char *argv[]) {
     std::sort(median.begin(), median.end(), std::greater<int>());
     f0[i] = median[1];
   }
+
   // Write f0 contour into the output file
   ofstream os(output_txt);
   if (!os.good()) {
