@@ -43,7 +43,7 @@ Ejercicios básicos
    * Determine el mejor candidato para el periodo de pitch localizando el primer máximo secundario de la
      autocorrelación. Inserte a continuación el código correspondiente.
 
-     ```c
+     ```cpp
     for(iR = iRMax = r.begin() + npitch_min; iR != r.end(); iR++){
       if(*iR > *iRMax){
         iRMax = iR;
@@ -54,7 +54,7 @@ Ejercicios básicos
 
    * Implemente la regla de decisión sonoro o sordo e inserte el código correspondiente.
 
-   ```c
+   ```cpp
     bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const {
     if((rmaxnorm > umaxnorm) && (r1norm > u1norm) && (pot > upot)) return false;
 
